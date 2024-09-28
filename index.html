@@ -1,0 +1,459 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Eloquent</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="icon" type="image/x-icon" href="logo.svg">
+</head>
+<body>
+    <div id="home-screen">
+        <div class="app-article">
+            <div class="app-name">eloquent</div>
+            <div class="app-transcription">/ˈel·ɪ·kwənt/</div>
+            <div class="app-definition">
+              <ol>
+                <li>using language to express ideas or opinions clearly and well, so that they have a strong effect on others</li>
+                <li>the app you currently using which helps you to learn a vast number of new words!</li>
+              </ol>
+            </div>
+        </div>
+        <div class="main-button-panel">
+            <div id="vocabButtons"></div>
+            <button id="newVocabButton" class="main-panel-button">New Vocabulary</button>
+            <button id="openSettingsButton" class="settings-button main-panel-button">Settings</button>
+        </div>
+
+        <!-- Welcome Modal -->
+        <div id="welcomeModal" class="welcome-modal" style="z-index: 69">
+            <div class="tiny-modal-content">
+                <div class="upper-panel rounded-upper-panel">Welcome to "Eloquent"!</div>
+                <div class="tiny-modal-main" style="overflow-y: auto;">
+                    <div class="category-item selected">1. Add your words.</div>
+                    <div class="category-item selected">2. Categorize your words, add translation and example sentences.</div>
+                    <div class="category-item selected">3. Play the flashcard game.</div>
+                    <div class="category-item selected">4. Do not remove browser history or cookies without exporting the data (see "Settings > Export data"). Otherwise your data will be wiped.</div>
+                    <div class="category-item selected">5. Your data is in the safety since we don't share it with anybody.</div>
+                </div>
+                <div class="bottom-panel rounded-bottom-panel">
+                    <button class="accept flex-button" style="border-radius: 0 0 2.5svh 2.5svh;" onclick="closeWelcome()">Got it!</button>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Backup Reminder Modal -->
+        <div id="backupReminder" class="welcome-modal" style="z-index: 68">
+            <div class="tiny-modal-content">
+                <div class="upper-panel rounded-upper-panel">Daily backup reminder</div>
+                <div class="tiny-modal-main" style="overflow-y: auto;">
+                    <div>We strongly advice you to download the backup file every time you add, change and delete new words. This will make possible restoring your progress if you have wiped browser history or cookies.</div>
+                    <div>NOTE: It's better to make the backup after you have made changes and you don't want to add, change or delete anything during the day (for backup see "Settings > Export data")</div>
+                </div>
+                <div class="bottom-panel rounded-bottom-panel">
+                    <button id="exportFromReminder" class="accept flex-button" onclick="exportVocabularyData()">Export data</button>
+                    <button id="closeBackupReminder" class="discard flex-button">Later</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Manage Vocabulary -->
+        <div id="vocabularyActionsModal" class="modal">
+            <div class="tiny-modal-content">
+                <div class="upper-panel rounded-upper-panel">Rename the vocabulary</div>
+                <div class="tiny-modal-main">
+                    <div>Press desired button to rename or delete this vocabulary.</div>
+                </div>
+                <div class="bottom-panel rounded-bottom-panel">
+                    <button id="openRenameVocabularyButton" class="accept flex-button">Rename</button>
+                    <button id="openDeleteVocabularyButton" class="discard flex-button">Delete</button>
+                    <button id="closeVocabularyActionsButton" class="discard flex-button">Discard</button>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Rename Vocabulary -->
+        <div id="renameVocabularyModal" class="modal">
+            <div class="tiny-modal-content">
+                <div class="upper-panel rounded-upper-panel">Rename vocabulary</div>
+                <div class="tiny-modal-main">
+                    <input type="text" id="newVocabNameInput" class="modal-input" placeholder="Enter new name of vocabulary">
+                </div>
+                <div class="bottom-panel rounded-bottom-panel">
+                    <button id="renameVocabularyButton" class="accept flex-button">Rename</button>
+                    <button id="closeRenameVocabularyButton" class="discard flex-button">Discard</button>
+                </div>
+            </div>
+        </div>
+
+        
+        <!-- Rename error Vocabulary -->
+        <div id="renameErrorModal" class="modal">
+            <div class="tiny-modal-content">
+                <div class="upper-panel rounded-upper-panel">Invalid name</div>
+                <div class="tiny-modal-main">
+                    <div id="renameErrorDescription"></div>
+                </div>
+                <div class="bottom-panel rounded-bottom-panel">
+                    <button id="closeRenameErrorButton" class="action-button single-flex-button">OK</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Delete Vocabulary -->
+        <div id="deleteVocabularyModal" class="modal">
+            <div class="tiny-modal-content">
+                <div class="upper-panel rounded-upper-panel">Confirm deletion</div>
+                <div class="tiny-modal-main">
+                    <div>Are you sure you want to delete this vocabulary? This action will also delete all the words within the vocabulary.</div>
+                </div>
+                <div class="bottom-panel rounded-bottom-panel">
+                    <button id="deleteVocabularyButton" class="discard flex-button">Delete</button>
+                    <button id="closeDeleteVocabularyButton" class="accept flex-button">Discard</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- New Vocabulary Modal -->
+    <div id="vocabModal" class="modal">
+        <div class="tiny-modal-content">
+            <div class="upper-panel rounded-upper-panel">New Vocabulary</div>
+            <div class="tiny-modal-main">
+                <input type="text" id="vocabularyNameModal" class="modal-input" placeholder="Enter Vocabulary Name">
+            </div>
+            <div class="bottom-panel rounded-bottom-panel">
+                <button id="addVocabularyModal" class="accept flex-button">Add</button>
+                <button id="discardVocab" class="discard flex-button">Discard</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Settings Modal -->
+    <div id="settingsModal" class="modal">
+        <div class="big-modal-content">
+            <div class="upper-panel">
+                <div id="closeSettingsButton">❮ Back</div>
+                <div id="">Settings</div>
+            </div>
+            <div class="big-modal-main settings-main">
+                <div class="category-item selected">
+                    <div>Storage Usage</div>
+                    <div id="storageUsage" class="settings-desc"></div>
+                </div>
+                <div class="category-item selected" id="exportData">
+                    <div>Export Data</div>
+                    <div class="settings-desc">Downloads json-file</div>
+                </div>
+                <div id="openImportModalButton" class="category-item selected">
+                    <div>Import Data</div>
+                    <div class="settings-desc">Restores your progress</div>
+                </div>
+                <div class="category-item selected" style="position: relative">
+                    <div>Appearance</div>
+                    <div class="settings-desc">Changes the color palette</div>
+                    <div class="appearance-tumbler light-theme-tumbler" onclick="lightAppearance()"></div>
+                    <div class="appearance-tumbler dark-theme-tumbler" onclick="darkAppearance()"></div>
+                </div>
+                <div id="openWipeModal" class="category-item selected">
+                    <div>Wipe data</div>
+                    <div class="settings-desc">Removes everything irreversibly</div>
+                </div>
+                <div class="category-item selected">
+                    <div>Version</div>
+                    <div class="settings-desc">stable-0-09-24</div>
+                </div>
+                <div class="category-item selected">
+                    <div>Features external font</div>
+                    <div class="settings-desc">Font: Borel, Author: https://github.com/RosaWagner/Borel</div>
+                </div>
+                <div class="category-item selected">
+                    <div>Copyright</div>
+                    <div class="settings-desc">Modification and further development is allowed if the author is mentioned.</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="importModal" class="modal">
+        <div class="tiny-modal-content">
+            <div class="upper-panel rounded-upper-panel">Import Data</div>
+            <div class="tiny-modal-main">
+                <div>Upload saved json-file to restore the progress. This operation deletes all current words, vocabularies, custom categories and loads the saved information from json-file.</div>
+            <input type="file" id="importFile" accept=".json" style="display: none;">
+            <label for="importFile">
+                <div class="modal-input" style="margin-top: 15px !important">Upload json-file</div>
+            </label>
+            <div id="uploadedFileName" class="modal-input">Nothing to see here</div>
+            </div>
+            <div class="bottom-panel rounded-bottom-panel">
+                <button id="importData" class="accept flex-button">Restore</button>
+                <button id="closeImportModalButton" class="discard flex-button">Discard</button>
+            </div>
+        </div>
+    </div>
+
+    
+    <div id="wipeModal" class="modal">
+        <div class="tiny-modal-content">
+            <div class="upper-panel rounded-upper-panel">Wipe Data</div>
+            <div class="tiny-modal-main">
+            <div>Hold on!</div>
+            <div>By clicking the button "Wipe data" everything you have stored will be permanently deleted. After wiping data there is <strong>no</strong> opportunity to restore words, translations, sentences and custom categories unless you have exported json-file previously.</div>
+            </div>
+            <div class="bottom-panel rounded-bottom-panel">
+                <button id="wipeData" class="accept flex-button">Wipe data</button>
+                <button id="closeWipeModalButton" class="discard flex-button">Discard</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Back Button and LocalStorage Info Button in Vocabulary Modal -->
+    <div id="vocabPanelModal" class="modal">
+      <div class="big-modal-content">
+          <div class="upper-panel">
+              <div id="backButton">❮ Back</div>
+              <div id="openCustomCategoriesManagerButton">Manage custom categories</div>
+              <div id="sortByCategoriesButton">Filter</div>
+          </div>
+          <div class="big-modal-main">
+            <div id="categoryDisplay"></div>
+              <div id="wordDisplayModal"></div>
+          </div>
+          <div class="bottom-panel">
+            <button id="addWordButton" class="action-button flex-button">Add Word</button>
+            <button id="learnWordsButton" class="action-button flex-button">Learn Words</button>
+        </div>
+      </div>
+    </div>
+
+    <div id="customCategoryManagerModal" class="modal">
+        <div class="tiny-modal-content">
+            <div class="upper-panel rounded-upper-panel">Manage custom categories</div>
+            <div class="tiny-modal-main">
+                <div>Press desired button to add or delete a specific custom category.</div>
+            </div>
+            <div class="bottom-panel rounded-bottom-panel">
+                <button id="openCustomCategoryButton" class="accept flex-button">Add</button>
+                <button id="deleteCustomCategoryButton" class="discard flex-button">Delete</button>
+                <button id="closeCustomCategoriesModalButton" class="discard flex-button">Discard</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Add Custom Category Modal -->
+    <div id="addCustomCategoryModal" class="modal">
+        <div class="tiny-modal-content">
+            <div class="upper-panel rounded-upper-panel">Add custom categories</div>
+            <div class="tiny-modal-main">
+                <input type="text" id="newCustomCategoryInput" class="modal-input" placeholder="Enter new category name">
+            </div>
+            <div class="bottom-panel rounded-bottom-panel">
+                <button id="applyNewCategory" class="accept flex-button">Apply</button>
+                <button id="discardNewCategory" class="discard flex-button">Discard</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Delete Custom Category Modal -->
+    <div id="deleteCustomCategoryModal" class="modal">
+        <div class="tiny-modal-content">
+            <div class="upper-panel rounded-upper-panel">Delete custom categories</div>
+            <div class="tiny-modal-main">
+                <div id="customCategoryList"></div>
+            </div>
+            <div class="bottom-panel rounded-bottom-panel">
+                <button id="discardDeleteCategory" class="discard single-flex-button">Discard</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Confirm Delete Custom Category Modal -->
+    <div id="confirmDeleteCustomCategoryModal" class="modal">
+        <div class="tiny-modal-content">
+            <div class="upper-panel rounded-upper-panel">Confirm Deletion</div>
+            <div class="tiny-modal-main">
+                <div>Are you sure you want to delete this category? Removing a custom category automatically removes all words withing that category.</div>
+            </div>
+            <div class="bottom-panel rounded-bottom-panel">
+                <button id="confirmDeleteCategory" class="discard flex-button">Delete</button>
+                <button id="cancelDeleteCategory" class="accept flex-button">Discard</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Filter active categories for Vocabulary-->
+    <div id="categorySelectionModal" class="modal">
+      <div class="tiny-modal-content">
+        <div class="upper-panel rounded-upper-panel">Select categories</div>
+          <div class="tiny-modal-main">
+            <div id="categoryList"></div>
+          </div>
+        <div class="bottom-panel rounded-bottom-panel">
+            <button id="applyCategoriesButton" class="accept flex-button">Apply</button>
+            <button id="switchAllButton" class="action-button flex-button">Switch all</button>
+            <button id="closeCategoryModal" class="discard flex-button">Discard</button>
+        </div>
+      </div>
+    </div>
+
+
+    <!-- Add Word Modal -->
+    <div id="wordModal" class="modal">
+        <div class="tiny-modal-content">
+            <div class="upper-panel rounded-upper-panel">Add Word</div>
+            <div class="tiny-modal-main">
+                <input type="text" id="wordModalInput" class="modal-input" placeholder="Word">
+                <select id="categoryModalInput" class="modal-input">
+                    <option value="">Select Category</option>
+                </select>
+                <input type="text" id="translationModalInput" class="modal-input" placeholder="Translation">
+                <input type="text" id="sentenceModalInput" class="modal-input" placeholder="Example Sentence">
+            </div>
+            <div class="bottom-panel rounded-bottom-panel">
+                <button id="addWordModal" class="accept flex-button">Add Word</button>
+                <button id="discardWord" class="discard flex-button">Discard</button>
+            </div>
+        </div>
+    </div>
+
+
+    <!-- Edit Word Modal -->
+    <div id="editWordModal" class="modal">
+      <div class="tiny-modal-content">
+        <div class="upper-panel rounded-upper-panel">Edit Word</div>
+        <div class="tiny-modal-main">
+          <input type="text" id="editWordInput" class="modal-input">
+          <select id="editCategoryInput" class="modal-input"></select>
+          <input type="text" id="editTranslationInput" class="modal-input">
+          <input type="text" id="editSentenceInput" class="modal-input">
+        </div>
+        <div class="bottom-panel rounded-bottom-panel">
+          <button id="saveEditButton" class="accept flex-button">Save</button>
+          <button id="discardEditButton" class="discard flex-button">Discard</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Delete Confirmation Modal -->
+    <div id="deleteConfirmationModal" class="modal">
+      <div class="tiny-modal-content">
+        <div class="upper-panel rounded-upper-panel">Confirm deletion</div>
+        <div class="tiny-modal-main">
+          <div id="deleteWordName">Are you sure you want to delete this word?</div>
+        </div>
+        <div class="bottom-panel rounded-bottom-panel">
+          <button id="confirmDeleteButton" class="discard flex-button">Delete</button>
+          <button id="discardDeleteButton" class="accept flex-button">Discard</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Flash Card Setup -->
+    <div id="flashCardSetupModal" class="modal">
+        <div class="tiny-modal-content">
+            <div class="upper-panel rounded-upper-panel">Set up flashcards game</div>
+            <div class="tiny-modal-main">
+                <div id="selectFlashCardCategories" class="modal-input">Select Categories</div>
+                <input type="number" id="numWordsInput" class="modal-input" min="1" placeholder="Number of words in the test">
+                <div>
+                    <input type="radio" id="showOriginalWord" name="flashcardSide" value="original" checked>
+                    <label for="showOriginalWord">Show original word first</label>
+                </div>
+                <div>
+                    <input type="radio" id="showTranslation" name="flashcardSide" value="translation">
+                    <label for="showTranslation">Show translation first</label>
+                </div>
+            </div>
+            <div class="bottom-panel rounded-bottom-panel">
+                <button id="startFlashCardLearning" class="accept flex-button">Start</button>
+                <button id="closeFlashCardSetupButton" class="discard flex-button">Discard</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Absent Number Modal -->
+    <div id="absentNumWords" class="modal">
+        <div class="tiny-modal-content">
+            <div class="upper-panel rounded-upper-panel">Absent number of words</div>
+            <div class="tiny-modal-main">
+                <div>You haven't typed the number of words. This setting defines how much words are displayed during the test.</div>
+            </div>
+            <div class="bottom-panel rounded-bottom-panel">
+                <button id="closeAbsentNumWordsButton" class="action-button single-flex-button">OK</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- FLash Card Categories -->
+    <div id="flashCardCategoryModal" class="modal">
+        <div class="tiny-modal-content">
+            <div class="upper-panel rounded-upper-panel">Select categories for flashcards</div>
+            <div class="tiny-modal-main">
+                <div id="flashCardCategoryList"></div>
+            </div>
+            <div class="bottom-panel rounded-bottom-panel">
+                <button id="applyFlashCardCategories" class="accept flex-button">Apply</button>
+                <button id="switchAllFlashCardCategories" class="action-button flex-button">Switch All</button>
+                <button id="closeFlashCategoriesButton" class="discard flex-button">Discard</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Flash Card Learning -->
+    <div id="flashCardLearningModal" class="modal">
+        <div class="big-modal-content">
+            <div class="upper-panel">
+                <div id="closeFlashCardLearning">❮ Back</div>
+                <div>Flashcards game</div>
+            </div>
+            <div class="big-modal-main">
+                <div class="flash-card" id="flashCard">
+                    <div class="card-side" id="flashCardFront"></div>
+                    <div class="card-side" id="flashCardBack"></div>
+                </div>
+                <div id="mockSentenceArea">
+                    <button id="toggleFlashMockSentence">Show Sentence</button>
+                    <div id="mockSentence" style="display: none;"></div>
+                </div>
+            </div>
+            <div class="bottom-panel">
+                <button id="rememberButton" class="accept flex-button">I Remember, Next</button>
+                <button id="dontRememberButton" class="discard flex-button">I Don't Remember</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Confirm leaving Modal -->
+    <div id="leaveGameModal" class="modal" >
+        <div class="tiny-modal-content">
+            <div class="upper-panel rounded-upper-panel">Leave flashcard game</div>
+            <div class="tiny-modal-main">
+                <div>Are you sure you want to quit the flashcard game?</div>
+            </div>
+            <div class="bottom-panel rounded-bottom-panel">
+                <button id="leaveGameButton" class="accept flex-button">Yes</button>
+                <button id="discardLeavingButton" class="discard flex-button">No</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Finished Session Modal -->
+    <div id="finishedSessionModal" class="modal">
+        <div class="tiny-modal-content">
+            <div class="upper-panel rounded-upper-panel">Flashcards game finished</div>
+            <div class="tiny-modal-main">
+                <div>The flashcards game has finished! Would you like to learn words from the same vocabulary once again?</div>
+            </div>
+            <div class="bottom-panel rounded-bottom-panel">
+                <button id="restartFlashSetupButton" class="accept flex-button">Yes</button>
+                <button id="backHomeButton" class="discard flex-button">No</button>
+            </div>
+        </div>
+    </div>
+
+
+
+<script src="app.js"></script>
+</body>
+</html>

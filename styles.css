@@ -1,0 +1,469 @@
+:root {
+  --voc-bg-color:  linear-gradient(0deg, #CBFFA9cc, #CBFFA900 70.71%),
+                   linear-gradient(120deg, #dec6e8cc, #dec6e8 70.71%),
+                   linear-gradient(240deg, #5dcdcecc, #5dcdce 70.71%);
+}
+@font-face {
+  font-family: montserrat;
+  src: url(Montserrat/Montserrat-VariableFont_wght.ttf);
+}
+@font-face {
+  font-family: borel;
+  src: url(Borel/Borel-Regular.ttf);
+}
+@property --color1 {
+  syntax: '<color>';
+  initial-value: #FF9B9B;
+  inherits: false;
+}
+@property --color2 {
+  syntax: '<color>';
+  initial-value: #FFD6A5;
+  inherits: false;
+}
+@property --color3 {
+  syntax: '<color>';
+  initial-value: #CBFFA9;
+  inherits: false;
+}
+@property --color4 {
+  syntax: '<color>';
+  initial-value: #ff000000;
+  inherits: false;
+}
+@property --color5 {
+  syntax: '<color>';
+  initial-value: #362222;
+  inherits: false;
+}
+@property --color6 {
+  syntax: '<color>';
+  initial-value: #6d5e47;
+  inherits: false;
+}
+@property --color7 {
+  syntax: '<color>';
+  initial-value: #0e110c;
+  inherits: false;
+}
+@keyframes main-bg-animation {
+  0% { --color1: #FF9B9B; --color2: #FFD6A5; --color3: #CBFFA9; }
+  33% { --color1: #CBFFA9; --color2: #FF9B9B; --color3: #FFD6A5; }
+  66% { --color1: #FFD6A5; --color2: #CBFFA9; --color3: #FF9B9B; }
+  100% { --color1: #FF9B9B; --color2: #FFD6A5; --color3: #CBFFA9; }
+}
+@keyframes dark-bg-animation {
+  0% { --color5: #362222; --color6: #6d5e47; --color7: #0e110c; }
+  33% { --color5: #0e110c; --color6: #362222; --color7: #6d5e47; }
+  66% { --color5: #6d5e47; --color6: #0e110c; --color7: #362222; }
+  100% { --color5: #362222; --color6: #6d5e47; --color7: #0e110c; }
+}
+* {
+  font-family: montserrat;
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+  -webkit-tap-highlight-color: transparent;
+  transition: 0.25s;
+}
+*::-webkit-scrollbar {
+  display: none;
+}
+#home-screen {
+  width: 100vw;
+  height: 100svh;
+  position: fixed;
+  left: 0;
+  top: 0;
+  background: linear-gradient(217deg, var(--color1), var(--color4) 70.71%),
+              linear-gradient(127deg, var(--color2), var(--color4) 70.71%),
+              linear-gradient(336deg, var(--color3), var(--color4) 70.71%);
+  animation: main-bg-animation 20s linear infinite;
+}
+.app-article {
+  width: 100vw;
+  height: 25svh;
+  position: absolute;
+  left: 0;
+  top: 25svh;
+}
+.app-name, .app-transcription, .app-definition {
+  width: calc( 100vw - 20px );
+  position: absolute;
+  left: 0;
+  padding: 0 10px 0 10px;
+}
+.app-name {
+  top: 0;
+  font-size: calc( 25svh / 5 );
+  text-align: center;
+  font-family: borel;
+}
+.app-transcription {
+  top: calc( 25svh / 4);
+  font-size: calc( 25svh / 7.5 );
+  text-align: center;
+}
+.app-definition {
+  top: calc( 25svh / 2);
+  font-size: calc( 25svh / 10 );
+  text-align: justify;
+}
+.main-button-panel {
+  width: 100vw;
+  height: calc( 15svh + 15px );
+  position: absolute;
+  left: 0;
+  bottom: 0;
+}
+button, #vocabButtons > div {
+  height: 5svh;
+  color: white;
+  border: none;
+  border-radius: 2.5svh;
+  cursor: pointer;
+  font-size: 2svh;
+  transition: 0.25s;
+}
+#vocabButtons > div {
+  display: flex;
+  justify-content: center;
+  flex-direction: row;
+}
+button:active, button:hover, button:focus, #vocabButtons > div:active, #vocabButtons > div:hover, #vocabButtons > div:focus { filter: brightness(0.9); }
+.main-panel-button {
+  position: absolute;
+  width: calc( 100vw - 10px );
+  left: 5px;
+  background: #ff8c00cc;
+}
+#vocabButtons {
+  width: calc(100vw - 5px);
+  height: 5svh;
+  position: absolute;
+  left: 5px;
+  top: 0;
+  overflow-x: auto;
+  overflow-y: hidden;
+  white-space: nowrap;
+}
+#vocabButtons > button, #vocabButtons > div {
+  display: inline-block;
+  height: 5svh;
+  padding: 0 0 0 15px;
+  margin-right: 5px;
+  background: #ff8c00cc;
+}
+.vocab-actions {
+  background: none;
+  padding: 0 15px 0 15px;
+}
+#newVocabButton {
+  top: calc( 5svh + 5px );
+}
+.settings-button {
+  top: calc( 10svh + 10px );
+}
+.modal, .welcome-modal {
+  width: 100vw;
+  height: 100svh;
+  background: #00000080;
+  position: fixed;
+  left: 0;
+  top: 0;
+  transition: 0.25s;
+}
+.modal {
+  opacity: 0;
+  display: none;
+}
+.tiny-modal-content {
+  width: calc( 100vw - 10svh - 30px );
+  height: calc( 50svh - 30px );
+  position: absolute;
+  left: 5svh;
+  top: 30svh;
+  padding: 15px;
+  background: #FFD6A5;
+  border-radius: 2.5svh;
+}
+.big-modal-content {
+  width: calc( 100vw - 30px );
+  height: calc( 100svh - 30px );
+  position: absolute;
+  left: 0;
+  top: 0;
+  padding: 15px;
+  background: #FFD6A5;
+}
+.tiny-modal-main {
+  width: calc( 100% - 30px );
+  height: calc( 100% - 10svh - 30px );
+  position: absolute;
+  left: 0;
+  top: 5svh;
+  padding: 15px;
+}
+.big-modal-main {
+  width: 100%;
+  height: calc( 100svh - 10svh );
+  position: absolute;
+  left: 0;
+  top: 5svh;
+  overflow: auto;
+}
+.tiny-modal-main > * {
+  text-align: justify;
+}
+.settings-main > * {
+  margin: 5px auto 0 auto;
+  max-width: 80% !important;
+}
+.upper-panel, .bottom-panel {
+  width: 100%;
+  height: 5svh;
+  position: absolute;
+  left: 0;
+  background: #ffffff80;
+  text-align: center;
+  line-height: 5svh;
+  font-size: 2svh;
+}
+.upper-panel { top: 0; }
+.bottom-panel {
+  bottom: 0;
+  display: flex;
+  justify-content: space-between;
+}
+.rounded-upper-panel { border-radius: 2.5svh 2.5svh 0 0; }
+.rounded-bottom-panel { border-radius: 0 0 2.5svh 2.5svh; }
+.modal-input, .modal-input-desc {
+  width: 100%;
+  text-align: center;
+  transition: 0.25s;
+  margin: 0 0 15px 0;
+}
+.modal-input {
+  height: 5svh;
+  background: #ffffff80;
+  line-height: 5svh;
+  box-sizing: border-box;
+  border: none;
+  border-radius: 1svh;
+  font-size: 1.75svh;
+}
+#vocabularyNameModal:active, #vocabularyNameModal:focus {
+  background: #ffffff;
+}
+.single-flex-button {
+  flex: 1;
+  margin: 0;
+  transition: 0.25s;
+  border-radius: 0 0 2.5svh 2.5svh;
+}
+.flex-button {
+  flex: 1;
+  margin: 0;
+  transition: 0.25s;
+  border-radius: 0;
+}
+.flex-button:first-child {
+  border-radius: 0 0 0 2.5svh;
+}
+.flex-button:not(:last-child) {
+  border-right: 1px solid #FFD6A5;
+}
+.flex-button:last-child {
+  border-radius: 0 0 2.5svh 0;
+}
+.accept { color: green; }
+.discard { color: red; }
+.action-button {color: black; }
+#wordDisplayModal {
+  width: calc( 100% - 30px );
+  height: calc( 100% - 30px );
+  position: absolute;
+  left: 0;
+  top: 0;
+  padding: 0 15px 15px 15px;
+}
+.word-item {
+  padding: 10px;
+  background-color: #ffe3c0;
+  border: 1px solid #ddd;
+  margin-bottom: 10px;
+  border-radius: 2.5svh;
+  cursor: pointer;
+  position: relative;
+  transition: 0.25s;
+}
+.word-item:active, .word-item:hover, .word-item:focus { background: #fff; }
+.edit-button, .delete-button {
+  width: 2.5svh;
+  height: 2.5svh;
+  position: absolute;
+  top: 1svh;
+  background-size: 100% 100%;
+  background-repeat: no-repeat;
+  background-position: center;
+}
+.edit-button {
+  background-image: url('pencil.svg');
+  right: 4.5svh;
+}
+.delete-button {
+  background-image: url('trash.svg');
+  right: 1svh;
+}
+#backButton, #sortByCategoriesButton, #closeFlashCardLearning, #closeSettingsButton {
+  height: 5svh;
+  line-height: 5svh;
+  position: absolute;
+  top: 0;
+  font-size: 2svh;
+}
+#backButton, #closeFlashCardLearning, #closeSettingsButton {
+  left: 0;
+  padding: 0 0 0 1.5svh;
+}
+#sortByCategoriesButton {
+  right: 0;
+  padding:0 1.5svh 0 0 ;
+}
+#categoryList, #flashCardCategoryList {
+  height: 100%;
+  overflow-y: auto;
+}
+
+.category-item {
+  position: relative;
+  padding: 10px;
+  border: 1px solid #ffffff80;
+  margin-bottom: 5px;
+  cursor: pointer;
+  transition: 0.25s;
+}
+.category-item.selected {
+  background-color: #ffffff80;
+  transition: 0.25s;
+}
+.delete-category-btn {
+  width: 3svh;
+  height: 3svh;
+  position: absolute;
+  top: calc( 50% - 1.5svh );
+  right: 1svh;
+  background-image: url('trash.svg');
+  background-size: 100% 100%;
+  background-repeat: no-repeat;
+  background-position: center;
+}
+.word-item:hover {
+  background-color: #f9f9f9;
+}
+.word-item strong {
+  font-size: 2svh;
+  display: block;
+}
+.word-item .translation {
+  font-size: 1.75svh;
+  color: #555;
+}
+.sentence {
+  display: none;
+  margin-top: 10px;
+  font-style: italic;
+  color: #777;
+  font-size: 1.75svh;
+  text-align: justify;
+}
+.category-heading {
+  font-size: 2svh;
+  font-weight: bold;
+  margin-bottom: 10px;
+  color: #444;
+}
+.flash-card, #mockSentenceArea {
+  width: 80vw;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  transform-style: preserve-3d;
+  perspective: 1000px;
+  transition: transform 0.6s;
+}
+.flash-card {
+  height: 50vw;
+  margin: 5svh auto;
+  font-size: 3svh;
+  background-color: #ffffff80;
+  border: 1px solid #ccc;
+  border-radius: 2.5svh;
+  cursor: pointer;
+}
+#mockSentenceArea {
+  width: 100%;
+  margin: auto;
+  flex-direction: column;
+}
+#mockSentence {
+  width: 80vw;
+  margin-top: 5svh;
+  text-align: justify;
+  transition: 0.25s;
+  opacity: 0;
+}
+#toggleFlashMockSentence {
+  width: 80vw;
+  margin: 0 auto;
+  color: green;
+}
+.settings-desc {
+  font-size: 1.75vh;
+  color: #555;
+}
+.appearance-tumbler {
+  width: 4.5vh;
+  height: 4.5vh;
+  border: 0.25vh solid #00000080;
+  border-radius: 2.5vh;
+  position: absolute;
+  top: calc( 50% - 2.5vh );
+}
+.light-theme-tumbler {
+  right: 7vh; 
+  background: linear-gradient(217deg, var(--color1), var(--color4) 70.71%),
+              linear-gradient(127deg, var(--color2), var(--color4) 70.71%),
+              linear-gradient(336deg, var(--color3), var(--color4) 70.71%);
+  animation: main-bg-animation 20s linear infinite;
+}
+.dark-theme-tumbler {
+  right: 1vh;
+  background: linear-gradient(217deg, var(--color5), var(--color4) 70.71%),
+              linear-gradient(127deg, var(--color6), var(--color4) 70.71%),
+              linear-gradient(336deg, var(--color7), var(--color4) 70.71%);
+  animation: dark-bg-animation 20s linear infinite;
+}
+.card-side {
+  width: 100%;
+  height: 100%;
+  position: absolute;
+  backface-visibility: hidden;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: 24px;
+  text-align: center;
+  background-color: #f0f0f0;
+  border: 1px solid #ccc;
+  cursor: pointer;
+}
+
+#flashCardFront {
+  background-color: #fafafa;
+}
+
+#flashCardBack {
+  transform: rotateY(180deg);
+  background-color: #f0f0f0;
+}
