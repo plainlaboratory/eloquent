@@ -202,6 +202,7 @@ button:active, button:hover, button:focus, #vocabButtons > div:active, #vocabBut
   left: 0;
   top: 5svh;
   padding: 15px;
+  overflow-y: auto;
 }
 .big-modal-main {
   width: 100%;
@@ -209,7 +210,6 @@ button:active, button:hover, button:focus, #vocabButtons > div:active, #vocabBut
   position: absolute;
   left: 0;
   top: 5svh;
-  overflow: auto;
 }
 .tiny-modal-main > * {
   text-align: justify;
@@ -280,11 +280,12 @@ button:active, button:hover, button:focus, #vocabButtons > div:active, #vocabBut
 .action-button {color: black; }
 #wordDisplayModal {
   width: calc( 100% - 30px );
-  height: calc( 100% - 30px );
+  height: calc( 100% - 5svh - 30px );
   position: absolute;
   left: 0;
-  top: 0;
-  padding: 0 15px 15px 15px;
+  bottom: 0;
+  padding: 0 15px 0 15px;
+  overflow-y: auto;
 }
 .word-item {
   padding: 10px;
@@ -363,6 +364,9 @@ button:active, button:hover, button:focus, #vocabButtons > div:active, #vocabBut
 .word-item strong {
   font-size: 2svh;
   display: block;
+  width: calc( 100% - 6svh );
+  word-wrap: break-word;
+  hyphens: auto;
 }
 .word-item .translation {
   font-size: 1.75svh;
@@ -380,6 +384,7 @@ button:active, button:hover, button:focus, #vocabButtons > div:active, #vocabBut
   font-size: 2svh;
   font-weight: bold;
   margin-bottom: 10px;
+  margin-top: 0;
   color: #444;
 }
 .flash-card, #mockSentenceArea {

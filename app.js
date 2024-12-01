@@ -224,6 +224,20 @@ openImportModalButton.addEventListener('click', () => {
     }, 1000);
 });
 
+document.getElementById("changelogModalButton").addEventListener('click', () => {
+    document.getElementById("changelogModal").style.display = 'block';
+    setTimeout(() => {
+        document.getElementById("changelogModal").style.opacity="1";
+      }, 250);
+});
+
+document.getElementById("closeChangelogButton").addEventListener('click', () => {
+    document.getElementById("changelogModal").style.opacity="0";
+    setTimeout(() => {
+        document.getElementById("changelogModal").style.display = 'none';
+      }, 250);
+});
+
 openCustomCategoriesManagerButton.addEventListener('click', () => {
     customCategoryManagerModal.style.display = 'block';
     setTimeout(() => {
@@ -428,6 +442,7 @@ function openVocabPanel(vocabName) {
     }, 250);
 
     // Display words for the selected vocabulary
+    displayAllCategories();
     displayWords(vocabName);
     applySavedAppearance();
 }
@@ -580,8 +595,6 @@ document.getElementById('deleteVocabularyButton').addEventListener('click', () =
         }, 250);
     }
 });
-
-
 
 // Add vocabulary
 addVocabularyModal.addEventListener('click', () => {
@@ -784,6 +797,7 @@ backButton.addEventListener('click', () => {
       }, 250);
       currentVocabulary = null;
       selectedVocab = null;
+      document.getElementById('searchingInput').value = "";
 });
 
 // Display localStorage usage info
@@ -840,15 +854,15 @@ const applyCategoriesButton = document.getElementById('applyCategoriesButton');
 const deleteWordName = document.getElementById('deleteWordName');
 
 // Track selected categories
-let selectedCategories = new Set(defaultCategories);
+let selectedCategories = new Set([...defaultCategories, ...customCategories]); // Include both default and custom categories
 
 // Open category selection modal
 sortByCategoriesButton.addEventListener('click', () => {
-    populateCategoryList();
+    populateCategoryList(); // Ensure it displays both default and custom categories
     categorySelectionModal.style.display = 'block';
     setTimeout(() => {
-        categorySelectionModal.style.opacity="1";
-      }, 250);
+        categorySelectionModal.style.opacity = "1";
+    }, 250);
 });
 
 // Close category selection modal
@@ -929,7 +943,7 @@ function toggleCategorySelection(category, element) {
 }
 
 // Switch all categories
-switchAllButton.addEventListener('click', () => {
+function toggleAllCategories() {
     const allCategories = [...defaultCategories, ...customCategories]; // Combine default and custom categories
 
     if (selectedCategories.size === allCategories.length) {
@@ -941,8 +955,19 @@ switchAllButton.addEventListener('click', () => {
     }
     
     populateCategoryList(); // Refresh the list
+    applySavedAppearance(); // Apply any appearance changes
+}
+
+// Display all categories
+function displayAllCategories() {
+    const allCategories = [...defaultCategories, ...customCategories];
+    allCategories.forEach(category => selectedCategories.add(category));
+    populateCategoryList();
     applySavedAppearance();
-});
+}
+
+// Attach the function to the button's click event
+switchAllButton.addEventListener('click', toggleAllCategories);
 
 
 // Apply selected categories
@@ -1002,6 +1027,76 @@ function displayWords(vocabulary) {
             }
         });
 }
+
+// Attach the event listener for the search functionality
+document.getElementById('searchingButton').addEventListener('click', () => {
+    const searchValue = document.getElementById('searchingInput').value.trim().toLowerCase();
+    if (!searchValue || !currentVocabulary) return; // Exit if search input is empty or no vocabulary is loaded
+
+    const vocabData = JSON.parse(localStorage.getItem(LOCAL_STORAGE_KEY)) || {};
+    const vocabulary = vocabData[currentVocabulary];
+    if (!vocabulary) return; // Exit if the vocabulary doesn't exist in localStorage
+
+    let wordFound = false;
+    let targetCategory = null;
+
+    // Search in localStorage
+    vocabulary.forEach(entry => {
+        const word = entry.word.toLowerCase();
+        const translation = entry.translation.toLowerCase();
+
+        if (word.includes(searchValue) || translation.includes(searchValue)) {
+            wordFound = true;
+            targetCategory = entry.category || 'Uncategorized';
+
+            // If the category is disabled, enable it
+            if (!selectedCategories.has(targetCategory)) {
+                selectedCategories.add(targetCategory);
+                populateCategoryList(); // Refresh the category UI
+            }
+        }
+    });
+
+    if (wordFound) {
+        // Refresh word display to reflect the enabled category
+        displayWords(currentVocabulary);
+
+        // Scroll to the word and highlight it
+        const wordItems = document.querySelectorAll('#wordDisplayModal .word-item');
+        wordItems.forEach(item => {
+            const word = item.querySelector('strong').textContent.toLowerCase();
+            const translation = item.querySelector('.translation').textContent.toLowerCase();
+
+            if (word.includes(searchValue) || translation.includes(searchValue)) {
+                // Scroll to the matching word
+                item.scrollIntoView({ behavior: 'smooth', block: 'center' });
+
+                // Highlight the word temporarily
+                item.style.backgroundColor = '#ffd54f';
+                setTimeout(() => {
+                    item.style.backgroundColor = '';
+                    applySavedAppearance();
+                }, 2000);
+                document.getElementById('searchingInput').value = '';
+            }
+        });
+    } else {
+        // Show "No results found" message
+        document.getElementById('noSearchingResults').style.display = 'block';
+        setTimeout(() => {
+            document.getElementById('noSearchingResults').style.opacity = '1';
+        }, 250);
+    }
+});
+
+document.getElementById("closeSearchButton").addEventListener('click', () => {
+    document.getElementById("searchingInput").value = "";
+    document.getElementById("noSearchingResults").style.opacity = '0';
+    setTimeout(() => {
+        document.getElementById("noSearchingResults").style.display = "none";
+    }, 250);
+});
+
 
 function openEditWordModal(vocabulary, entry) {
     currentEditVocabulary = vocabulary;

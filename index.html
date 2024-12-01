@@ -159,17 +159,17 @@
                     <div>Wipe data</div>
                     <div class="settings-desc">Removes everything irreversibly</div>
                 </div>
-                <div class="category-item selected">
-                    <div>Version</div>
-                    <div class="settings-desc">stable-0-09-24</div>
+                <div id="changelogModalButton" class="category-item selected">
+                    <div>Changelog</div>
+                    <div class="settings-desc">stable-1-11-24</div>
                 </div>
                 <div class="category-item selected">
-                    <div>Font credits</div>
-                    <div class="settings-desc">"Eloquent" uses font "Borel". The author of the font: https://github.com/RosaWagner/Borel</div>
+                    <div>Features external font</div>
+                    <div class="settings-desc">Font: Borel, Author: https://github.com/RosaWagner/Borel</div>
                 </div>
                 <div class="category-item selected">
                     <div>Copyright</div>
-                    <div class="settings-desc">Modification and further development is allowed if the author is mentioned: https://github.com/plainlaboratory/eloquent</div>
+                    <div class="settings-desc">Modification and further development is allowed if the author is mentioned.</div>
                 </div>
             </div>
         </div>
@@ -208,6 +208,28 @@
         </div>
     </div>
 
+    <!-- Changelog -->
+    <div id="changelogModal" class="modal">
+        <div class="tiny-modal-content">
+            <div class="upper-panel rounded-upper-panel">Changelog</div>
+            <div class="tiny-modal-main">
+                <div class="category-heading">Version:</div>
+                <div class="category-item selected">stable-1-11-24</div>
+                <div class="category-heading">Improvements:</div>
+                <div class="category-item selected">Long words are displayed correctly</div>
+                <div class="category-item selected">Auto-switch for words of custom categories has been added</div>
+                <div class="category-item selected">Custom categories management pop-up is now scrollable</div>
+                <div class="category-heading">Features:</div>
+                <div class="category-item selected">Search of saved words has been added</div>
+                <div class="category-item selected">Old bugs have been fixed</div>
+                <div class="category-item selected">New bugs have been added</div>
+            </div>
+            <div class="bottom-panel rounded-bottom-panel">
+                <button id="closeChangelogButton" class="action-button single-flex-button">Discard</button>
+            </div>
+        </div>
+    </div>
+
     <!-- Back Button and LocalStorage Info Button in Vocabulary Modal -->
     <div id="vocabPanelModal" class="modal">
       <div class="big-modal-content">
@@ -218,7 +240,10 @@
           </div>
           <div class="big-modal-main">
             <div id="categoryDisplay"></div>
-              <div id="wordDisplayModal"></div>
+            <input id="searchingInput" class="modal-input" style="width: calc( 100% - 45px - 5svh ); margin-left: 15px; margin-top: 15px; margin-right: 0; border-radius: 2.5svh;" placeholder="Search for a saved word">
+            <button id="searchingButton" style="width: 5svh; margin-left: 10px; color: black">⌕</button>
+              <div id="wordDisplayModal">
+              </div>
           </div>
           <div class="bottom-panel">
             <button id="addWordButton" class="action-button flex-button">Add Word</button>
@@ -227,6 +252,20 @@
       </div>
     </div>
 
+    <!-- No Searching Results Modal -->
+    <div id="noSearchingResults" class="modal">
+        <div class="tiny-modal-content">
+            <div class="upper-panel rounded-upper-panel">Search results</div>
+            <div class="tiny-modal-main">
+                <div>No words or translations have been found</div>
+            </div>
+            <div class="bottom-panel rounded-bottom-panel">
+                <button id="closeSearchButton" class="action-button single-flex-button">Discard</button>
+            </div>
+        </div>
+    </div>
+
+    <!--- Custom Categories Manager-->
     <div id="customCategoryManagerModal" class="modal">
         <div class="tiny-modal-content">
             <div class="upper-panel rounded-upper-panel">Manage custom categories</div>
@@ -323,10 +362,10 @@
       <div class="tiny-modal-content">
         <div class="upper-panel rounded-upper-panel">Edit Word</div>
         <div class="tiny-modal-main">
-          <input type="text" id="editWordInput" class="modal-input">
+          <input type="text" id="editWordInput" class="modal-input" placeholder="Word">
           <select id="editCategoryInput" class="modal-input"></select>
-          <input type="text" id="editTranslationInput" class="modal-input">
-          <input type="text" id="editSentenceInput" class="modal-input">
+          <input type="text" id="editTranslationInput" class="modal-input" placeholder="Translation">
+          <input type="text" id="editSentenceInput" class="modal-input" placeholder="Example Sentence">
         </div>
         <div class="bottom-panel rounded-bottom-panel">
           <button id="saveEditButton" class="accept flex-button">Save</button>
