@@ -236,20 +236,34 @@ button:active, button:hover, button:focus, #vocabButtons > div:active, #vocabBut
 }
 .rounded-upper-panel { border-radius: 2.5svh 2.5svh 0 0; }
 .rounded-bottom-panel { border-radius: 0 0 2.5svh 2.5svh; }
-.modal-input, .modal-input-desc {
+.modal-input, .modal-textarea, .modal-input-desc {
   width: 100%;
-  text-align: center;
   transition: 0.25s;
   margin: 0 0 15px 0;
+  min-height: 5svh;
 }
-.modal-input {
-  height: 5svh;
+.modal-input, .modal-textarea {
   background: #ffffff80;
-  line-height: 5svh;
   box-sizing: border-box;
   border: none;
   border-radius: 1svh;
   font-size: 1.75svh;
+}
+.modal-input {
+  height: 5svh;
+  line-height: 5svh;
+  text-align: center;
+}
+.modal-textarea {
+  height: 10svh;
+  line-height: 2.5svh;
+  text-align: justify;
+  resize: none;
+  padding: 1svh 3.5svh 1svh 1svh;
+}
+.modal-textarea::placeholder {
+  line-height: 5svh;
+  text-align: center;
 }
 #vocabularyNameModal:active, #vocabularyNameModal:focus {
   background: #ffffff;
@@ -298,14 +312,27 @@ button:active, button:hover, button:focus, #vocabButtons > div:active, #vocabBut
   transition: 0.25s;
 }
 .word-item:active, .word-item:hover, .word-item:focus { background: #fff; }
-.edit-button, .delete-button {
+.edit-button, .delete-button, .show-sentences-button, .translate-button {
   width: 2.5svh;
   height: 2.5svh;
   position: absolute;
-  top: 1svh;
   background-size: 100% 100%;
   background-repeat: no-repeat;
   background-position: center;
+  transition: 0.25s;
+}
+.edit-button, .delete-button {
+  top: 1svh;
+}
+.translate-button {
+  right: calc( 15px + 1svh );
+  top: calc( 11.25svh + 45px );
+  background-image: url('translate.svg');
+}
+.show-sentences-button {
+  right: calc( 15px + 1svh );
+  top: calc( 21.5svh + 60px );
+  background-image: url('sparkles.svg');
 }
 .edit-button {
   background-image: url('pencil.svg');
@@ -314,6 +341,9 @@ button:active, button:hover, button:focus, #vocabButtons > div:active, #vocabBut
 .delete-button {
   background-image: url('trash.svg');
   right: 1svh;
+}
+.edit-button:active, .delete-button:active, .show-sentences-button:active, .translate-button:active {
+  filter: brightness(0.9);
 }
 #backButton, #sortByCategoriesButton, #closeFlashCardLearning, #closeSettingsButton {
   height: 5svh;
@@ -342,6 +372,9 @@ button:active, button:hover, button:focus, #vocabButtons > div:active, #vocabBut
   margin-bottom: 5px;
   cursor: pointer;
   transition: 0.25s;
+}
+#customCategoryList > .category-item {
+  padding: 10px calc(4.5svh) 10px 10px;
 }
 .category-item.selected {
   background-color: #ffffff80;
@@ -398,6 +431,7 @@ button:active, button:hover, button:focus, #vocabButtons > div:active, #vocabBut
   transition: transform 0.6s;
 }
 .flash-card {
+  width: 80vw;
   height: 50vw;
   margin: 5svh auto;
   font-size: 3svh;
@@ -405,6 +439,7 @@ button:active, button:hover, button:focus, #vocabButtons > div:active, #vocabBut
   border: 1px solid #ccc;
   border-radius: 2.5svh;
   cursor: pointer;
+  word-break: break-all;
 }
 #mockSentenceArea {
   width: 100%;
@@ -426,6 +461,7 @@ button:active, button:hover, button:focus, #vocabButtons > div:active, #vocabBut
 .settings-desc {
   font-size: 1.75vh;
   color: #555;
+  word-break: break-all;
 }
 .appearance-tumbler {
   width: 4.5vh;

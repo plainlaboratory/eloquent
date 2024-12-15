@@ -6,6 +6,7 @@
     <title>Eloquent</title>
     <link rel="stylesheet" href="styles.css">
     <link rel="icon" type="image/x-icon" href="logo.svg">
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 </head>
 <body>
     <div id="home-screen">
@@ -60,14 +61,33 @@
         <!-- Manage Vocabulary -->
         <div id="vocabularyActionsModal" class="modal">
             <div class="tiny-modal-content">
-                <div class="upper-panel rounded-upper-panel">Rename the vocabulary</div>
+                <div class="upper-panel rounded-upper-panel">Edit the vocabulary</div>
                 <div class="tiny-modal-main">
-                    <div>Press desired button to rename or delete this vocabulary.</div>
+                    <div>Set the original language of words within this vocabulary:</div>
+                    <select id="editOriginalLangSelect" class="modal-input"></select>
+                    <div>Set the translation language of words within this vocabulary:</div>
+                    <select id="editTranslationLangSelect" class="modal-input"></select>
                 </div>
                 <div class="bottom-panel rounded-bottom-panel">
                     <button id="openRenameVocabularyButton" class="accept flex-button">Rename</button>
                     <button id="openDeleteVocabularyButton" class="discard flex-button">Delete</button>
-                    <button id="closeVocabularyActionsButton" class="discard flex-button">Discard</button>
+                    <button id="closeVocabularyActionsButton" class="accept flex-button">Save</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Set Language Vocabulary -->
+        <div id="setLanguagesModal" class="modal">
+            <div class="tiny-modal-content">
+                <div class="upper-panel rounded-upper-panel">Set Languages of Vocabulary</div>
+                <div class="tiny-modal-main">
+                    <div>Select the original language of words within this vocabulary:</div>
+                    <select id="originalLangSelect" class="modal-input"></select>
+                    <div>Select the translation language of words within this vocabulary:</div>
+                    <select id="translationLangSelect" class="modal-input"></select>
+                </div>
+                <div class="bottom-panel rounded-bottom-panel">
+                    <button id="saveLangButton" class="accept single-flex-button">Save</button>
                 </div>
             </div>
         </div>
@@ -161,7 +181,7 @@
                 </div>
                 <div id="changelogModalButton" class="category-item selected">
                     <div>Changelog</div>
-                    <div class="settings-desc">stable-1-11-24</div>
+                    <div class="settings-desc">stable-1-12-24</div>
                 </div>
                 <div class="category-item selected">
                     <div>Features external font</div>
@@ -169,7 +189,7 @@
                 </div>
                 <div class="category-item selected">
                     <div>Copyright</div>
-                    <div class="settings-desc">Modification and further development is allowed if the author is mentioned.</div>
+                    <div class="settings-desc">Modification and further development is allowed if the author is mentioned: https://github.com/plainlaboratory/eloquent/edit/main/index.html</div>
                 </div>
             </div>
         </div>
@@ -184,7 +204,7 @@
             <label for="importFile">
                 <div class="modal-input" style="margin-top: 15px !important">Upload json-file</div>
             </label>
-            <div id="uploadedFileName" class="modal-input">Nothing to see here</div>
+            <div id="uploadedFileName" class="modal-input">File name appears here</div>
             </div>
             <div class="bottom-panel rounded-bottom-panel">
                 <button id="importData" class="accept flex-button">Restore</button>
@@ -214,18 +234,22 @@
             <div class="upper-panel rounded-upper-panel">Changelog</div>
             <div class="tiny-modal-main">
                 <div class="category-heading">Version:</div>
-                <div class="category-item selected">stable-1-11-24</div>
+                <div class="category-item selected">stable-1-12-24</div>
                 <div class="category-heading">Improvements:</div>
-                <div class="category-item selected">Long words are displayed correctly</div>
-                <div class="category-item selected">Auto-switch for words of custom categories has been added</div>
-                <div class="category-item selected">Custom categories management pop-up is now scrollable</div>
+                <div class="category-item selected">Long words are displayed correctly in the learning mode</div>
+                <div class="category-item selected">Fields for example sentences have been expanded for convenience</div>
+                <div class="category-item selected">Long names of categories are displayed correctly now</div>
+                <div class="category-item selected">Buttons to trigger the editing of the words have gotten more saturated background color</div>
                 <div class="category-heading">Features:</div>
-                <div class="category-item selected">Search of saved words has been added</div>
-                <div class="category-item selected">Old bugs have been fixed</div>
+                <div class="category-item selected">One-click translation of words has been added</div>
+                <div class="category-item selected">Search for the example sentences on Wikipedia has been added</div>
+                <div class="category-item selected">json-format of backup file has been changed</div>
+                <div class="category-item selected">Safe transition between different json-formats has been included</div>
+                <div class="category-item selected">Old bugs have been removed</div>
                 <div class="category-item selected">New bugs have been added</div>
             </div>
             <div class="bottom-panel rounded-bottom-panel">
-                <button id="closeChangelogButton" class="action-button single-flex-button">Discard</button>
+                <button id="closeChangelogButton" class="action-button single-flex-button">OK</button>
             </div>
         </div>
     </div>
@@ -347,7 +371,9 @@
                     <option value="">Select Category</option>
                 </select>
                 <input type="text" id="translationModalInput" class="modal-input" placeholder="Translation">
-                <input type="text" id="sentenceModalInput" class="modal-input" placeholder="Example Sentence">
+                <div id="addTranslation" class="translate-button" onclick="addTranslation()"></div>
+                <textarea id="sentenceModalInput" class="modal-textarea" placeholder="Example Sentence"></textarea>
+                <div id="addOpenSentences" class="show-sentences-button"></div>
             </div>
             <div class="bottom-panel rounded-bottom-panel">
                 <button id="addWordModal" class="accept flex-button">Add Word</button>
@@ -356,22 +382,50 @@
         </div>
     </div>
 
-
     <!-- Edit Word Modal -->
     <div id="editWordModal" class="modal">
-      <div class="tiny-modal-content">
-        <div class="upper-panel rounded-upper-panel">Edit Word</div>
-        <div class="tiny-modal-main">
-          <input type="text" id="editWordInput" class="modal-input" placeholder="Word">
-          <select id="editCategoryInput" class="modal-input"></select>
-          <input type="text" id="editTranslationInput" class="modal-input" placeholder="Translation">
-          <input type="text" id="editSentenceInput" class="modal-input" placeholder="Example Sentence">
-        </div>
-        <div class="bottom-panel rounded-bottom-panel">
-          <button id="saveEditButton" class="accept flex-button">Save</button>
-          <button id="discardEditButton" class="discard flex-button">Discard</button>
+        <div class="tiny-modal-content">
+          <div class="upper-panel rounded-upper-panel">Edit Word</div>
+          <div class="tiny-modal-main">
+            <input type="text" id="editWordInput" class="modal-input" placeholder="Word">
+            <select id="editCategoryInput" class="modal-input"></select>
+            <input type="text" id="editTranslationInput" class="modal-input" placeholder="Translation">
+            <div id="editTranslation" class="translate-button" onclick="editTranslation()"></div>
+            <textarea id="editSentenceInput" class="modal-textarea" placeholder="Example Sentence"></textarea>
+            <div id="editOpenSentences" class="show-sentences-button"></div>
+          </div>
+          <div class="bottom-panel rounded-bottom-panel">
+            <button id="saveEditButton" class="accept flex-button">Save</button>
+            <button id="discardEditButton" class="discard flex-button">Discard</button>
+          </div>
         </div>
       </div>
+      
+    <!-- Show Sentences Modal -->
+    <div id="sentenceExamplesModal" class="modal">
+        <div class="tiny-modal-content">
+            <div class="upper-panel rounded-upper-panel">Find example sentence</div>
+            <div class="tiny-modal-main">
+                <div id="result"></div>
+            </div>
+            <div class="bottom-panel rounded-bottom-panel">
+                <button id="addSentenceButton" class="accept flex-button">Add Selected</button>
+                <button id="discardSentence" class="discard flex-button">Discard</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal to display errors -->
+    <div id="languageIssueModal" class="modal">
+        <div class="tiny-modal-content">
+            <div class="upper-panel rounded-upper-panel">Error</div>
+            <div class="tiny-modal-main">
+                <div id="languageIssueDesc"></div>
+            </div>
+            <div class="bottom-panel rounded-bottom-panel">
+                <button id="closeLanguageIssue" class="action-button single-flex-button">OK</button>
+            </div>
+        </div>
     </div>
 
     <!-- Delete Confirmation Modal -->

@@ -429,23 +429,211 @@ function createVocabButton(vocabName) {
     vocabButtonsDiv.appendChild(vocabDiv);
 }
 
-// Open vocabulary panel
+
+// List of languages
+const languageOptions = [
+    { value: "another", label: "Another" },
+    { value: "af", label: "Afrikaans" },
+    { value: "sq", label: "Albanian" },
+    { value: "am", label: "Amharic" },
+    { value: "ar", label: "Arabic" },
+    { value: "hy", label: "Armenian" },
+    { value: "az", label: "Azerbaijani" },
+    { value: "ba", label: "Bashkir" },
+    { value: "eu", label: "Basque" },
+    { value: "be", label: "Belarusian" },
+    { value: "bn", label: "Bengali" },
+    { value: "bs", label: "Bosnian" },
+    { value: "bg", label: "Bulgarian" },
+    { value: "my", label: "Burmese" },
+    { value: "ca", label: "Catalan" },
+    { value: "ceb", label: "Cebuano" },
+    { value: "zh", label: "Chinese" },
+    { value: "hr", label: "Croatian" },
+    { value: "cs", label: "Czech" },
+    { value: "da", label: "Danish" },
+    { value: "nl", label: "Dutch" },
+    { value: "en", label: "English" },
+    { value: "eo", label: "Esperanto" },
+    { value: "et", label: "Estonian" },
+    { value: "fi", label: "Finnish" },
+    { value: "fr", label: "French" },
+    { value: "gl", label: "Galician" },
+    { value: "ka", label: "Georgian" },
+    { value: "de", label: "German" },
+    { value: "el", label: "Greek" },
+    { value: "gu", label: "Gujarati" },
+    { value: "he", label: "Hebrew" },
+    { value: "hi", label: "Hindi" },
+    { value: "hu", label: "Hungarian" },
+    { value: "is", label: "Icelandic" },
+    { value: "id", label: "Indonesian" },
+    { value: "ga", label: "Irish" },
+    { value: "it", label: "Italian" },
+    { value: "ja", label: "Japanese" },
+    { value: "kn", label: "Kannada" },
+    { value: "kk", label: "Kazakh" },
+    { value: "ko", label: "Korean" },
+    { value: "ky", label: "Kyrgyz" },
+    { value: "la", label: "Latin" },
+    { value: "lv", label: "Latvian" },
+    { value: "lt", label: "Lithuanian" },
+    { value: "lb", label: "Luxembourgish" },
+    { value: "mk", label: "Macedonian" },
+    { value: "ms", label: "Malay" },
+    { value: "ml", label: "Malayalam" },
+    { value: "mr", label: "Marathi" },
+    { value: "mn", label: "Mongolian" },
+    { value: "ne", label: "Nepali" },
+    { value: "no", label: "Norwegian Bokmål" },
+    { value: "nn", label: "Norwegian Nynorsk" },
+    { value: "oc", label: "Occitan" },
+    { value: "or", label: "Oriya" },
+    { value: "fa", label: "Persian" },
+    { value: "pl", label: "Polish" },
+    { value: "pt", label: "Portuguese" },
+    { value: "pa", label: "Punjabi" },
+    { value: "ro", label: "Romanian" },
+    { value: "ru", label: "Russian" },
+    { value: "sk", label: "Slovak" },
+    { value: "sl", label: "Slovenian" },
+    { value: "es", label: "Spanish" },
+    { value: "su", label: "Sundanese" },
+    { value: "sw", label: "Swahili" },
+    { value: "sv", label: "Swedish" },
+    { value: "tl", label: "Tagalog" },
+    { value: "tg", label: "Tajik" },
+    { value: "ta", label: "Tamil" },
+    { value: "tt", label: "Tatar" },
+    { value: "te", label: "Telugu" },
+    { value: "th", label: "Thai" },
+    { value: "tr", label: "Turkish" },
+    { value: "uk", label: "Ukrainian" },
+    { value: "ur", label: "Urdu" },
+    { value: "uz", label: "Uzbek" },
+    { value: "vi", label: "Vietnamese" },
+    { value: "war", label: "Waray-Waray" },
+    { value: "cy", label: "Welsh" },
+    { value: "fy", label: "Western Frisian" },
+    { value: "yo", label: "Yoruba" },
+];
+
 function openVocabPanel(vocabName) {
-    // Ensure selectedVocab and currentVocabulary are in sync
+    // Retrieve vocabularies from localStorage
+    const vocabularies = JSON.parse(localStorage.getItem('vocabularies')) || {};
+
+    // Initialize the vocabulary if it doesn't exist
+    if (!vocabularies[vocabName]) {
+        console.log(`Vocabulary "${vocabName}" not found. Initializing new vocabulary.`);
+        vocabularies[vocabName] = {
+            words: [],
+            originalLang: "none",
+            translationLang: "none"
+        };
+        localStorage.setItem('vocabularies', JSON.stringify(vocabularies));
+    }
+
+    const vocabulary = vocabularies[vocabName];
+
+    // Check if languages are set
+    if (!vocabulary.originalLang || !vocabulary.translationLang || 
+        vocabulary.originalLang === "none" || vocabulary.translationLang === "none") {
+        console.log(`Languages not set for vocabulary "${vocabName}". Opening #setLanguagesModal.`);
+
+        // Open the modal to set languages
+        openSetLanguagesModal(vocabName);
+        return; // Prevent opening the vocabulary panel until languages are set
+    }
+
+    // Languages are set, proceed to open the vocabulary panel
+    console.log(`Opening vocabulary panel for "${vocabName}" with languages ${vocabulary.originalLang} -> ${vocabulary.translationLang}`);
+
+    // Sync the selected vocabulary
     selectedVocab = vocabName;
     currentVocabulary = vocabName;
 
     // Open the vocabulary panel
+    const vocabPanelModal = document.getElementById('vocabPanelModal');
     vocabPanelModal.style.display = 'block';
     setTimeout(() => {
         vocabPanelModal.style.opacity = "1";
     }, 250);
 
-    // Display words for the selected vocabulary
+    // Display words and categories for the selected vocabulary
     displayAllCategories();
     displayWords(vocabName);
     applySavedAppearance();
 }
+
+function openSetLanguagesModal(vocabName) {
+    const vocabularies = JSON.parse(localStorage.getItem('vocabularies')) || {};
+    const currentVocabulary = vocabularies[vocabName] || { originalLang: "none", translationLang: "none" };
+
+    // Populate dropdowns with saved languages (if available)
+    populateLanguageDropdowns(currentVocabulary.originalLang, currentVocabulary.translationLang);
+
+    // Show modal
+    const setLanguagesModal = document.getElementById('setLanguagesModal');
+    setLanguagesModal.style.display = 'block';
+    setTimeout(() => {
+        setLanguagesModal.style.opacity = '1';
+    }, 250);
+
+    // Handle Save button click
+    document.getElementById('saveLangButton').onclick = () => {
+        const originalLanguage = document.getElementById('originalLangSelect').value;
+        const translationLanguage = document.getElementById('translationLangSelect').value;
+
+        // Validate language selection
+        if (originalLanguage === 'none' || translationLanguage === 'none') {
+            alert('Please select valid languages for both fields.');
+            return;
+        }
+
+        // Update the vocabulary with selected languages
+        currentVocabulary.originalLang = originalLanguage;
+        currentVocabulary.translationLang = translationLanguage;
+        vocabularies[vocabName] = currentVocabulary;
+        localStorage.setItem('vocabularies', JSON.stringify(vocabularies));
+
+        console.log(`Languages saved for "${vocabName}": ${originalLanguage} -> ${translationLanguage}`);
+
+        // Close the modal
+        setLanguagesModal.style.opacity = '0';
+        setTimeout(() => {
+            setLanguagesModal.style.display = 'none';
+            openVocabPanel(vocabName); // Proceed to open the vocabulary panel
+        }, 250);
+    };
+}
+
+function populateLanguageDropdowns(originalLang = "none", translationLang = "none") {
+    const originalLangSelect = document.getElementById('originalLangSelect');
+    const translationLangSelect = document.getElementById('translationLangSelect');
+
+    // Clear existing options
+    originalLangSelect.innerHTML = '';
+    translationLangSelect.innerHTML = '';
+
+    // Populate both dropdowns and preselect values if provided
+    languageOptions.forEach(lang => {
+        const option1 = document.createElement('option');
+        const option2 = document.createElement('option');
+
+        option1.value = lang.value;
+        option1.textContent = lang.label;
+        if (lang.value === originalLang) option1.selected = true;
+
+        option2.value = lang.value;
+        option2.textContent = lang.label;
+        if (lang.value === translationLang) option2.selected = true;
+
+        originalLangSelect.appendChild(option1);
+        translationLangSelect.appendChild(option2);
+    });
+}
+
+
 
 
 // Open vocabulary actions 
@@ -455,15 +643,66 @@ function showVocabularyActions(vocabName) {
     setTimeout(() => {
         vocabularyActionsModal.style.opacity = '1';
     }, 250);
+
+    // Retrieve vocabularies from localStorage
+    const vocabularies = JSON.parse(localStorage.getItem('vocabularies')) || {};
+    const vocabulary = vocabularies[vocabName] || {
+        originalLang: "none",
+        translationLang: "none"
+    };
+
+    // Populate the #editOriginalLangSelect drop-down
+    const originalLangSelect = document.querySelector('#editOriginalLangSelect');
+    originalLangSelect.innerHTML = ''; // Clear existing options
+    languageOptions.forEach(lang => {
+        const option = document.createElement('option');
+        option.value = lang.value;
+        option.textContent = lang.label;
+        if (lang.value === vocabulary.originalLang) {
+            option.selected = true; // Pre-select the original language
+        }
+        originalLangSelect.appendChild(option);
+    });
+
+    // Populate the #editTranslationLangSelect drop-down
+    const translationLangSelect = document.querySelector('#editTranslationLangSelect');
+    translationLangSelect.innerHTML = ''; // Clear existing options
+    languageOptions.forEach(lang => {
+        const option = document.createElement('option');
+        option.value = lang.value;
+        option.textContent = lang.label;
+        if (lang.value === vocabulary.translationLang) {
+            option.selected = true; // Pre-select the translation language
+        }
+        translationLangSelect.appendChild(option);
+    });
 }
+
 
 // Close vocabulary actions
 closeVocabularyActionsButton.addEventListener('click', () => {
-    vocabularyActionsModal.style.opacity="0";
+    // Get the selected values from the drop-down lists
+    const originalLangSelect = document.querySelector('#editOriginalLangSelect');
+    const translationLangSelect = document.querySelector('#editTranslationLangSelect');
+    const originalLang = originalLangSelect.value;
+    const translationLang = translationLangSelect.value;
+
+    // Save the selected languages to localStorage for the current vocabulary
+    const vocabularies = JSON.parse(localStorage.getItem('vocabularies')) || {};
+    if (!vocabularies[currentVocabularyToEdit]) {
+        vocabularies[currentVocabularyToEdit] = {}; // Initialize vocabulary if not present
+    }
+    vocabularies[currentVocabularyToEdit].originalLang = originalLang;
+    vocabularies[currentVocabularyToEdit].translationLang = translationLang;
+
+    localStorage.setItem('vocabularies', JSON.stringify(vocabularies));
+
+    // Close the modal
+    vocabularyActionsModal.style.opacity = "0";
     setTimeout(() => {
         vocabularyActionsModal.style.display = 'none';
-      }, 250);
-  });
+    }, 250);
+});
 
 // Open rename vocabulary modal
 openRenameVocabularyButton.addEventListener('click', () => {
@@ -566,35 +805,44 @@ closeRenameErrorButton.addEventListener('click', () => {
           }, 250);
       });
 
-document.getElementById('deleteVocabularyButton').addEventListener('click', () => {
-    if (currentVocabularyToEdit) {
-        // Remove from localStorage
-        const vocabData = JSON.parse(localStorage.getItem(LOCAL_STORAGE_KEY)) || {};
-        delete vocabData[currentVocabularyToEdit];
-        localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(vocabData));
-
-        // Find the vocab item by data-vocab-name and remove it
-        const vocabButton = document.querySelector(`#vocabButtons .vocab-item[data-vocab-name="${currentVocabularyToEdit}"]`);
-        if (vocabButton) {
-            vocabButton.remove(); // Remove the button from the DOM
-        }
-
-        // Reset global variables
-        selectedVocab = null;
-        currentVocabulary = null;
-
-        // Close the delete modal
-      deleteVocabularyModal.style.opacity="0";
-      setTimeout(() => {
-        deleteVocabularyModal.style.display = 'none';
-        }, 250);
+      document.getElementById('deleteVocabularyButton').addEventListener('click', () => {
+        if (currentVocabularyToEdit) {
+            // Remove from "vocabularyAppData"
+            const vocabData = JSON.parse(localStorage.getItem(LOCAL_STORAGE_KEY)) || {};
+            delete vocabData[currentVocabularyToEdit];
+            localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(vocabData));
     
-      vocabularyActionsModal.style.opacity="0";
-      setTimeout(() => {
-        vocabularyActionsModal.style.display = 'none';
-        }, 250);
-    }
-});
+            // Remove from "vocabularies"
+            const vocabularies = JSON.parse(localStorage.getItem('vocabularies')) || {};
+            delete vocabularies[currentVocabularyToEdit];
+            localStorage.setItem('vocabularies', JSON.stringify(vocabularies));
+    
+            // Find the vocab item by data-vocab-name and remove it
+            const vocabButton = document.querySelector(`#vocabButtons .vocab-item[data-vocab-name="${currentVocabularyToEdit}"]`);
+            if (vocabButton) {
+                vocabButton.remove(); // Remove the button from the DOM
+            }
+    
+            // Reset global variables
+            selectedVocab = null;
+            currentVocabulary = null;
+    
+            // Close the delete modal
+            deleteVocabularyModal.style.opacity = "0";
+            setTimeout(() => {
+                deleteVocabularyModal.style.display = 'none';
+            }, 250);
+    
+            // Close the vocabulary actions modal
+            vocabularyActionsModal.style.opacity = "0";
+            setTimeout(() => {
+                vocabularyActionsModal.style.display = 'none';
+            }, 250);
+    
+            console.log(`Vocabulary "${currentVocabularyToEdit}" has been deleted.`);
+        }
+    });
+    
 
 // Add vocabulary
 addVocabularyModal.addEventListener('click', () => {
@@ -652,12 +900,38 @@ addWordModal.addEventListener('click', () => {
     applySavedAppearance();
 });
 
-
 // Export Data
 function exportVocabularyData() {
+    // Retrieve vocabularies and vocabularyAppData from localStorage
+    const vocabularies = JSON.parse(localStorage.getItem('vocabularies')) || {};
+    const vocabularyAppData = JSON.parse(localStorage.getItem('vocabularyAppData')) || {};
+
+    // Add original and translation languages for each vocabulary
+    const enrichedVocabularies = {};
+    for (const [key, value] of Object.entries(vocabularies)) {
+        enrichedVocabularies[key] = {
+            ...value,
+            originalLang: value.originalLang || "none", // Default to "none" if not set
+            translationLang: value.translationLang || "none" // Default to "none" if not set
+        };
+    }
+
+    // Ensure words in vocabularyAppData are properly exported as arrays
+    const enrichedVocabularyAppData = {};
+    for (const [vocabName, wordsData] of Object.entries(vocabularyAppData)) {
+        if (Array.isArray(wordsData)) {
+            enrichedVocabularyAppData[vocabName] = wordsData; // Already in correct format
+        } else if (typeof wordsData === 'object') {
+            enrichedVocabularyAppData[vocabName] = Object.values(wordsData); // Convert object to array
+        } else {
+            enrichedVocabularyAppData[vocabName] = []; // Default to empty array if invalid format
+        }
+    }
+
     // Gather data to export
     const exportData = {
-        vocabularies: vocabularies,
+        vocabularies: enrichedVocabularies,
+        vocabularyAppData: enrichedVocabularyAppData, // Include vocabulary words data
         customCategories: customCategories,
         appearanceTheme: localStorage.getItem('appearanceTheme') || 'light' // Default to 'light' if not set
     };
@@ -676,6 +950,8 @@ function exportVocabularyData() {
     document.body.appendChild(a);
     a.click();
     document.body.removeChild(a);
+
+    // Hide the backup reminder after export
     backupReminder.style.opacity = "0";
     setTimeout(() => {
         backupReminder.style.display = 'none';
@@ -690,22 +966,56 @@ importData.addEventListener('click', () => {
     const file = importFile.files[0];
     if (file) {
         const reader = new FileReader();
-        reader.onload = function(event) {
+        reader.onload = function (event) {
             const importedData = JSON.parse(event.target.result);
 
-            // Check if the imported data contains vocabularies, custom categories, and theme
+            // Process vocabularies (languages)
             if (importedData.vocabularies) {
-                vocabularies = importedData.vocabularies;
-                localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(vocabularies)); // Save vocabularies
-                loadVocabularies(); // Load vocabularies into UI
+                const updatedVocabularies = {};
+                for (const [vocabName, vocabDetails] of Object.entries(importedData.vocabularies)) {
+                    updatedVocabularies[vocabName] = {
+                        originalLang: vocabDetails.originalLang || 'none', // Default to 'none' if missing
+                        translationLang: vocabDetails.translationLang || 'none' // Default to 'none' if missing
+                    };
+                }
+                localStorage.setItem('vocabularies', JSON.stringify(updatedVocabularies)); // Save updated vocabularies
             }
-            
+
+            // Process vocabularyAppData (words, categories, translations, etc.)
+            if (importedData.vocabularyAppData) {
+                // New format: Process vocabularyAppData directly
+                const updatedVocabularyAppData = {};
+                for (const [vocabName, wordsData] of Object.entries(importedData.vocabularyAppData)) {
+                    // Ensure wordsData is directly stored as an array (no indexing)
+                    if (Array.isArray(wordsData)) {
+                        updatedVocabularyAppData[vocabName] = wordsData;
+                    } else {
+                        console.warn(`Invalid wordsData format for vocabulary "${vocabName}". Skipping.`);
+                    }
+                }
+                localStorage.setItem('vocabularyAppData', JSON.stringify(updatedVocabularyAppData)); // Save updated data
+            } else if (importedData.vocabularies) {
+                // Old format: Map vocabularies to vocabularyAppData
+                const updatedVocabularyAppData = {};
+                for (const [vocabName, wordsData] of Object.entries(importedData.vocabularies)) {
+                    // Assume vocabularies in the old format are arrays of word objects
+                    if (Array.isArray(wordsData)) {
+                        updatedVocabularyAppData[vocabName] = wordsData;
+                    } else {
+                        console.warn(`Invalid wordsData format for vocabulary "${vocabName}". Skipping.`);
+                    }
+                }
+                localStorage.setItem('vocabularyAppData', JSON.stringify(updatedVocabularyAppData)); // Save as vocabularyAppData
+            }
+
+            // Process custom categories
             if (importedData.customCategories) {
                 customCategories = importedData.customCategories;
                 localStorage.setItem('customCategories', JSON.stringify(customCategories)); // Save custom categories
                 populateCategories(); // Refresh category dropdowns
             }
 
+            // Process appearance theme
             if (importedData.appearanceTheme) {
                 localStorage.setItem('appearanceTheme', importedData.appearanceTheme); // Save the theme
                 if (importedData.appearanceTheme === 'dark') {
@@ -718,11 +1028,13 @@ importData.addEventListener('click', () => {
 
     // Close import modal after operation
     importModal.style.opacity = "0";
+    settingsModal.style.opacity = "0";
     setTimeout(() => {
         importModal.style.display = 'none';
+        settingsModal.style.display = 'none';
+        window.location.reload();
     }, 250);
 });
-
 
 function checkForUploadedFile() {
     const importFileInput = document.getElementById('importFile');
@@ -1123,6 +1435,213 @@ function openEditWordModal(vocabulary, entry) {
     }, 250);
 }
 
+
+// Function to open the modal with animation
+function showModal(modal) {
+    modal.style.display = 'block';
+    setTimeout(() => {
+      modal.style.opacity = '1';
+    }, 10);  // Small delay to trigger the opacity transition
+}
+
+// Function to close the modal with animation
+function hideModal(modal) {
+    modal.style.opacity = '0';
+    setTimeout(() => {
+      modal.style.display = 'none';
+    }, 250);
+}
+
+// Function to trigger the modal and start the search
+function openSentenceModal(buttonId) {
+    let word = ''; // Determine the word source based on the button
+    if (buttonId === 'editOpenSentences') {
+        word = document.getElementById('editWordInput').value;
+    } else {
+        word = document.getElementById('wordModalInput').value;
+    }
+    
+    const vocabularies = JSON.parse(localStorage.getItem('vocabularies')) || {};
+    const currentVocab = vocabularies[currentVocabulary] || {};
+    const originalLang = currentVocab.originalLang || "none";
+    const translationLang = currentVocab.translationLang || "none";
+
+    // Check if the word is absent
+    if (!word) {
+        // Display language issue modal with appropriate message
+        const issueModal = document.getElementById('languageIssueModal');
+        document.getElementById('languageIssueDesc').textContent = "Please enter the word to search for an example sentence.";
+        showModal(issueModal); // Assume showModal is a helper function to show modals
+        return;
+    }
+
+    // Check if the original language is set to "another"
+    if (originalLang === "another") {
+        // Display language issue modal with appropriate message
+        const issueModal = document.getElementById('languageIssueModal');
+        document.getElementById('languageIssueDesc').textContent = "Please set the original language to use this function.";
+        showModal(issueModal);
+        return;
+    }
+
+    activeTextarea = buttonId === 'addOpenSentences' ? 'sentenceModalInput' : 'editSentenceInput';
+
+    // Build the API URL
+    const apiUrl = `https://${originalLang}.wikipedia.org/w/api.php?action=query&list=search&srsearch=${word}&format=json&srlimit=10&origin=*`;
+
+    // Make the API call
+    fetch(apiUrl)
+      .then(response => response.json())
+      .then(data => {
+        const searchResults = data.query.search;
+        let resultHtml = '';
+
+        if (searchResults.length) {
+          resultHtml += '<h3>Select a sentence:</h3>';
+          searchResults.forEach((result, index) => {
+            // Clean up HTML tags in the snippet
+            const cleanSnippet = cleanHtml(result.snippet);
+            resultHtml += `
+              <div class="category-item" id="categoryItem${index}">
+                <input type="radio" id="sentence${index}" name="sentence" value="${cleanSnippet}">
+                <label for="sentence${index}">${cleanSnippet}...</label>
+              </div>`;
+          });
+        } else {
+          resultHtml = 'No results found';
+        }
+
+        // Insert results into modal
+        document.getElementById('result').innerHTML = resultHtml;
+
+        // Add event listeners for radio buttons to toggle "selected" class
+        const radioButtons = document.querySelectorAll('input[name="sentence"]');
+        radioButtons.forEach(radio => {
+          radio.addEventListener('change', () => {
+            // Remove "selected" class from all category-item divs
+            document.querySelectorAll('.category-item').forEach(div => div.classList.remove('selected'));
+
+            // Add "selected" class to the parent div of the selected radio button
+            const parentDiv = radio.closest('.category-item');
+            if (parentDiv) {
+              parentDiv.classList.add('selected');
+            }
+          });
+        });
+
+        // Show the modal with fade-in effect
+        const modal = document.getElementById('sentenceExamplesModal');
+        showModal(modal);
+      })
+      .catch(error => {
+        console.error('Error fetching data:', error);
+        alert('There was an error retrieving the data.');
+      });
+}
+
+
+document.getElementById("closeLanguageIssue").addEventListener('click', () => {
+    document.getElementById("languageIssueModal").style.opacity="0";
+    setTimeout(() => {
+        document.getElementById("languageIssueModal").style.display = 'none';
+      }, 250);
+});
+
+// Clean HTML tags and decode HTML entities from the snippet
+function cleanHtml(html) {
+    const tempDiv = document.createElement('div');
+    tempDiv.innerHTML = html;
+
+    // Strip out the HTML tags by getting the textContent
+    return tempDiv.textContent || tempDiv.innerText || '';
+}
+
+// Add Sentence Button functionality
+document.getElementById('addSentenceButton').addEventListener('click', function () {
+    const selectedSentence = document.querySelector('input[name="sentence"]:checked');
+
+    if (!selectedSentence) {
+      alert('Please select a sentence.');
+      return;
+    }
+
+    // Get the label text corresponding to the selected radio button
+    const label = document.querySelector(`label[for="${selectedSentence.id}"]`);
+    if (label) {
+        // Set the textarea value to the label's full text (the full sentence)
+        document.getElementById(activeTextarea).value = label.textContent;
+    }
+
+    const modal = document.getElementById('sentenceExamplesModal');
+    hideModal(modal);
+});
+
+// Discard button functionality to close the modal
+document.getElementById('discardSentence').addEventListener('click', function () {
+    const modal = document.getElementById('sentenceExamplesModal');
+    hideModal(modal);
+});
+
+// Attach click event handlers for the buttons
+document.getElementById('addOpenSentences').addEventListener('click', function () {
+    openSentenceModal('addOpenSentences');
+});
+
+document.getElementById('editOpenSentences').addEventListener('click', function () {
+    openSentenceModal('editOpenSentences');
+});
+
+// Attach click event handler for closing the modal when clicking outside of it
+document.addEventListener('click', function (event) {
+    const modal = document.getElementById('sentenceExamplesModal');
+    if (event.target === modal) {
+      hideModal(modal);
+    }
+});
+
+
+async function translateText(inputId, outputId) {
+    const inputText = document.getElementById(inputId).value;
+    const vocabularies = JSON.parse(localStorage.getItem('vocabularies')) || {};
+    const currentVocab = vocabularies[currentVocabulary] || {};
+    const sourceLang = currentVocab.originalLang || "none";
+    const targetLang = currentVocab.translationLang || "none";
+
+    // Check if the translation language is set to "another"
+    if (targetLang === "another") {
+        // Display language issue modal with the appropriate message
+        const issueModal = document.getElementById('languageIssueModal');
+        document.getElementById('languageIssueDesc').textContent = "Please set the translation language";
+        showModal(issueModal); // Assume `showModal` is a helper function to display modals
+        return;
+    }
+
+    // Construct the translation API URL
+    const url = `https://translate.googleapis.com/translate_a/single?client=gtx&sl=${sourceLang}&tl=${targetLang}&dt=t&q=${encodeURIComponent(inputText)}`;
+
+    try {
+        const response = await fetch(url);
+        const data = await response.json();
+
+        // Extracting the translated text from the response
+        const translatedText = data[0][0][0];
+        document.getElementById(outputId).value = translatedText;
+    } catch (error) {
+        console.error('Error:', error);
+        document.getElementById(outputId).value = 'Error in translation.';
+    }
+}
+
+
+// Function triggered by the "Add Translation" button
+function addTranslation() {
+    translateText('wordModalInput', 'translationModalInput');
+}
+
+// Function triggered by the "Edit Translation" button
+function editTranslation() {
+    translateText('editWordInput', 'editTranslationInput');
+}
 
 
 // Save edited word
